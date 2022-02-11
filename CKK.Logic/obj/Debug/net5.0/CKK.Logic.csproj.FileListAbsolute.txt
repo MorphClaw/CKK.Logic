@@ -1,0 +1,5 @@
+C:\Users\4400111526\Documents\TestRepo\project 1\deliverable 2 save\CKK.Logic\CKK.Logic\obj\Debug\net5.0\CKK.Logic.csproj.AssemblyReference.cache
+C:\Users\4400111526\Documents\TestRepo\project 1\deliverable 2 save\CKK.Logic\CKK.Logic\obj\Debug\net5.0\CKK.Logic.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\4400111526\Documents\TestRepo\project 1\deliverable 2 save\CKK.Logic\CKK.Logic\obj\Debug\net5.0\CKK.Logic.AssemblyInfoInputs.cache
+C:\Users\4400111526\Documents\TestRepo\project 1\deliverable 2 save\CKK.Logic\CKK.Logic\obj\Debug\net5.0\CKK.Logic.AssemblyInfo.cs
+C:\Users\4400111526\Documents\TestRepo\project 1\deliverable 2 save\CKK.Logic\CKK.Logic\obj\Debug\net5.0\CKK.Logic.csproj.CoreCompileInputs.cache
