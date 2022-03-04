@@ -1,2 +1,2 @@
-# CKK.Logic.Failed
+# CKK.Logic
 Project deliverable 1
