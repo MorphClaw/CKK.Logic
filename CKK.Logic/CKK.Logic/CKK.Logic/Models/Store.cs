@@ -88,7 +88,7 @@ namespace CKK.Logic.Models
         }
         public Product FindStoreItemById(int id)
         {
-            if (id == _product1.GetId())  /*_id or id?*/
+            if (id == _product1.GetId()) 
             {
                 return _product1;
             }
