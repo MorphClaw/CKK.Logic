@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,159 +9,140 @@ namespace CKK.Logic.Models
     public class ShoppingCart
     {
         private Customer _Customer;
-        private ShoppingCartItem _product1;
-        private ShoppingCartItem _product2;
-        private ShoppingCartItem _product3;             
+        private List<ShoppingCartItem> Products;
 
         public ShoppingCart(Customer cust)
         {
-            _Customer = cust;           
+            _Customer = cust;
+            Products = new List<ShoppingCartItem>();
         }
-       
+
         public int GetCustomerId()
         {
             return _Customer.GetId();
         }
 
-        public ShoppingCartItem GetProductById(int id)
+        public ShoppingCartItem AddProduct(Product prod, int quantity)
         {
-            if (id == _product1.GetProduct().GetId())
+            if (quantity > 0 && prod != null)
             {
-                return _product1;
+                if (Products.Any())
+                {
+                    var GetProductSelect =
+                        from value in Products
+                        select value.GetProduct();
+
+                    foreach (var item in GetProductSelect) //for each item in that list 
+                    {
+                        if (item == prod) //if your product matches prod
+                        {
+
+                            var _index = Products.FindIndex(a => a.GetProduct() == prod); //set index of matching prod
+
+                            Products[_index].SetQuantity(Products[_index].GetQuantity() + quantity);
+                            return Products[_index];
+                        }
+                        else
+                        {
+                            continue; //no match, next item
+                        }
+                    }
+                    Products.Add(new ShoppingCartItem(prod, quantity));
+                    return Products.Last(); //none match, make new one and return it
+                }
+                else
+                {
+                    Products.Add(new ShoppingCartItem(prod, quantity));
+                    return Products[0]; //if no items, make new one and return it
+                }
             }
-            else if (id == _product2.GetProduct().GetId())
-            {
-                return _product2;
-            }
-            else if (id == _product3.GetProduct().GetId())
-            {
-                return _product3;
-            }
-            else
-            {
-                return null;
-            }
+            else { return null; } //incorrect paramaters, no add
         }
 
-        public ShoppingCartItem AddStoreItem(Product prod)
+        public ShoppingCartItem RemoveProduct(int id, int quantity)
         {
-            return AddStoreItem(prod, 1);           
-        }
-        public ShoppingCartItem AddStoreItem(Product prod, int _quantity) 
-        {
-           
-            if ( (prod != null) && (_quantity >= 1) )
-            {               
-                
-                if (_product1 == null)
-                {
-                    _product1 = new ShoppingCartItem(prod, _quantity);
-                    return _product1;                      
-                }
-                else if (_product2 == null)
-                {
-                    _product2 = new ShoppingCartItem(prod, _quantity);                    
-                    return _product2;
-                }
-                else if (_product3 == null)
-                {
-                    _product3 = new ShoppingCartItem(prod, _quantity);                   
-                    return _product3;
-                }
+            if (Products.Any()) //if theres items to remove
+            {
 
+                var GetIDSelect =
+                    from value in Products
+                    where value.GetProduct().GetId() == id
+                    select value.GetProduct().GetId(); //makes a list with only 1 item, the item that matches
+
+                foreach (var item in GetIDSelect) //for each item in that list
+                {
+                    var _index = Products.FindIndex(a => a.GetProduct().GetId() == id); //set index of matching id
+
+                    if (quantity > 0) //valid quantity                                  
+                    {
+                        if (item == id) //if your id matches id
+                        {
+                            if (Products[_index].GetQuantity() > quantity)
+                            {
+                                Products[_index].SetQuantity(Products[_index].GetQuantity() - quantity);
+                                return Products[_index];
+                            }
+                            if (Products[_index].GetQuantity() <= quantity)
+                            {
+                                ShoppingCartItem zeroQuantSCI = Products[_index];
+                                zeroQuantSCI.SetQuantity(0);
+                                Products.RemoveAt(_index);
+                                return zeroQuantSCI;
+                            }
+                        }
+                        else { continue; } //if doesnt match, go to the next one
+                    }
+                    else //negative quantities will remove the item
+                    {
+                        ShoppingCartItem zeroQuantSCI = Products[_index];
+                        zeroQuantSCI.SetQuantity(0);
+                        Products.RemoveAt(_index);
+                        return zeroQuantSCI;
+                    }
+                }
+                return null; //if nothing matches, return null
                
-                if (prod == _product1.GetProduct())
-                {
-                    _product1.SetQuantity(_product1.GetQuantity() + _quantity);
-                    return _product1;
-                }
-                if (prod == _product2.GetProduct())
-                {
-                    _product2.SetQuantity(_product2.GetQuantity() + _quantity);
-                    return _product2;
-                }
-                if (prod == _product3.GetProduct())
-                {
-                    _product3.SetQuantity(_product3.GetQuantity() + _quantity);
-                    return _product3;
-                }
+            }
+            else { return null; } //if no items nothing comes back
+        }      
 
-                else
-                {
-                    return null;
-                }
-            }           
-            else
-            {
-                return null;
-            }
-        }
-        public ShoppingCartItem RemoveStoreItem(Product prod, int _quantity)
+        public ShoppingCartItem GetProductById(int id) //tests.. its findstoreitem but this is sci? and in the sctests...
         {
-            //(_quantity < _product1.GetQuantity()
-            if ((_product1 != null || _product2 != null || _product3 != null) && (_quantity >= 1)) 
-            {                
-                if ((prod == _product1.GetProduct()) && (_quantity <= _product1.GetQuantity()) )
-                {
-                    _product1.SetQuantity(_product1.GetQuantity() - _quantity);
-                    if (_product1.GetQuantity() <= 0)
-                    {
-                        _product1 = null;
-                    }                   
-                    return _product1;                                        
-                }
-                else if (prod == _product2.GetProduct() && (_quantity <= _product2.GetQuantity()))
-                {
-                    _product2.SetQuantity(_product2.GetQuantity() - _quantity);
-                    if (_product2.GetQuantity() <= 0)
-                    {
-                        _product2 = null;
-                    }
-                    return _product2;
-                }
-                else if (prod == _product3.GetProduct() && (_quantity <= _product3.GetQuantity()))
-                {
-                    _product3.SetQuantity(_product3.GetQuantity() - _quantity);
-                    if (_product3.GetQuantity() <= 0)
-                    {
-                        _product3 = null;
-                    }
-                    return _product3;
-                }
-                else
-                {
-                    return null;
-                }
-            }          
-            else
+            if (Products.Any())
             {
-                return null;
+                var GetIDSelect =
+                        from value in Products
+                        select value.GetProduct().GetId(); //makes a collections ennumerable list of the ids
+                foreach (var item in GetIDSelect)
+                {
+                    var _index = Products.FindIndex(a => a.GetProduct().GetId() == id); //set index of matching id
+
+                    if (item == id)
+                    {
+
+                        return Products[_index];
+                    }
+                    else { continue; } //goes to next one
+                }
+                return null; //if none match, return null
             }
+            else { return null; } // no products no return
         }
+
         public decimal GetTotal()
         {
-            decimal Total = (_product1.GetQuantity() * _product1.GetProduct().GetPrice()) + (_product2.GetQuantity() * _product2.GetProduct().GetPrice()) + (_product3.GetQuantity() * _product3.GetProduct().GetPrice());
+            decimal Total = 0;
+            for (int counter = 0; counter < Products.Count(); ++counter) //for each item in list
+            {
+                Total = Total + Products[counter].GetTotal(); //add its(SCI) price*quantity to total
+            }
+
             return Total;
         }
-        public ShoppingCartItem GetProduct(int prodNum)
+
+        public List<ShoppingCartItem> GetProducts()
         {
-            if (prodNum == 1)
-            {
-                return _product1;
-            }
-            else if (prodNum == 2)
-            {
-                return _product2;
-            }
-            else if (prodNum == 3)
-            {
-                return _product3;
-            }
-            //else
-           // {
-            //    return null;
-            //}
-            return null;
+            return Products;
         }
     }
 }
