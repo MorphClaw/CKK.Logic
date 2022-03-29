@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +11,12 @@ namespace CKK.Logic.Models
 
         private int _id;
         private string _name;
-        private Product _product1;
-        private Product _product2;
-        private Product _product3;
+        private List<StoreItem> Items;
+
+        public Store()
+        {
+            Items = new List<StoreItem>();
+        }
 
         public int GetId()
         {
@@ -31,80 +34,113 @@ namespace CKK.Logic.Models
         {
             _name = name;
         }
-        public void AddStoreItem(Product prod)
+
+        public StoreItem AddStoreItem(Product prod, int quantity)
         {
-            if (prod != null)
+            if (quantity >= 0 && prod != null)
             {
-                if (_product1 == null)
+
+                if (Items.Any())
                 {
-                    _product1 = prod;
+                    var GetProductSelect /*returns product*/= //enumerable type of a list of products
+                            from value in Items
+                            select value.GetProduct();
+
+                    foreach (Product item in GetProductSelect) //for each item in that list
+                    {
+
+                        if (item == prod) //if your product matches prod
+                        {
+
+                            var _index = Items.FindIndex(a => a.GetProduct() == prod); //set index of matching prod
+
+                            Items[_index].SetQuantity(Items[_index].GetQuantity() + quantity);
+                            return Items[_index];
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    Items.Add(new StoreItem(prod, quantity));
+                    return Items.Last();
                 }
-                else if (_product2 == null)
+                else
                 {
-                    _product2 = prod;
-                }
-                else if (_product3 == null)
-                {
-                    _product3 = prod;
+                    Items.Add(new StoreItem(prod, quantity));
+                    return Items[0];
                 }
             }
-        }
-        public void RemoveStoreItem(int productNum)
-        {
-            if (_product1 != null || _product2 != null || _product3 != null)
-            {
-                if (productNum == 1)
-                {
-                    _product1 = null;
-                }
-                else if (productNum == 2)
-                {
-                    _product2 = null;
-                }
-                else if (productNum == 3)
-                {
-                    _product3 = null;
-                }
-            }
-        }
-        public Product GetStoreItem(int productNum)
-        {
-            if (productNum == 1)
-            {
-                return _product1;
-            }
-            else if (productNum == 2)
-            {
-                return _product2;
-            }
-            else if (productNum == 3)
-            {
-                return _product3;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        public Product FindStoreItemById(int id)
-        {
-            if (id == _product1.GetId()) 
-            {
-                return _product1;
-            }
-            else if (id == _product2.GetId())
-            {
-                return _product2;
-            }
-            else if (id == _product3.GetId())
-            {
-                return _product3;
-            }
-            else
-            {
-                return null;
-            }
+
+            else { return null; }
         }
 
+        public StoreItem RemoveStoreItem(int id, int quantity)
+        {
+            if (Items.Any())
+            {
+                if (quantity > 0)
+                {
+                    var GetIDSelect /*ReturnsProductID*/ =
+                        from value in Items
+                        select value.GetProduct().GetId(); //ennumerable list of ids
+                    foreach (var item in GetIDSelect) //for each item in that list
+                    {
+
+                        if (item == id) //if your id matches id
+                        {
+                            var _index = Items.FindIndex(a => a.GetProduct().GetId() == id); //set index of matching id
+
+
+                            if (Items[_index].GetQuantity() > quantity)
+                            {
+                                Items[_index].SetQuantity(Items[_index].GetQuantity() - quantity);
+                                return Items[_index];
+                            }
+                            if (Items[_index].GetQuantity() <= quantity)
+                            {
+                                Items[_index].SetQuantity(0);
+                                return Items[_index];
+                            }
+                        }
+                        else //if it doesnt match, go to next item
+                        {
+                            continue;
+                        }
+                    }
+                    return null; //if nothing matches, return null
+                }
+                else { return null; } //if not removing any, nothing comes back
+            }
+            else { return null; } //if no items nothing comes back
+        }
+
+        public StoreItem FindStoreItemById(int id)
+        {
+            if (Items.Any())
+            {
+                var GetIDSelect =
+                       from value in Items
+                       select value.GetProduct().GetId(); //makes a collections ennumerable list of the ids
+                foreach (var item in GetIDSelect)
+                {
+                    var _index = Items.FindIndex(a => a.GetProduct().GetId() == id); //set index of matching id
+
+                    if (item == id)
+                    {
+                        return Items[_index];
+                    }
+                    else { continue; } //goes to next one
+
+                }
+                return null;  //no match no return                  
+            }
+            else { return null; } //no items no return
+        }
+
+        public List<StoreItem> GetStoreItems()
+        {
+            return Items;
+        }
     }
 }
